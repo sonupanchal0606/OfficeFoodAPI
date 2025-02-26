@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using NetTopologySuite.Geometries;
 
 
@@ -14,6 +15,7 @@ namespace OfficeFoodAPI.Model
         public string address { get; set; }
 
         public Guid companyid { get; set; } // if type = employee then store companyid of that employee
+        [JsonIgnore] // Prevents serialization of this navigation property
         public Company Company { get; set; }
 
         // Store Coordinates as Geometry (Point)
@@ -25,6 +27,8 @@ namespace OfficeFoodAPI.Model
         public DateTime createdat { get; set; }
         public DateTime upatedat { get; set; }
     }
+
+
 
     public class User_Employee_post
     {

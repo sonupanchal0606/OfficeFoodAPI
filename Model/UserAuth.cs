@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace OfficeFoodAPI.Model
 {
@@ -11,6 +12,7 @@ namespace OfficeFoodAPI.Model
 
         [ForeignKey("User")]
         public Guid userid { get; set; }
+        [JsonIgnore] // Prevents serialization of this navigation property
         public User user { get; set; }
 
         public string passwordHash { get; set; } // Securely store hashed password

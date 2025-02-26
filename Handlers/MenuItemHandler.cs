@@ -16,7 +16,9 @@ namespace OfficeFoodAPI.Handlers
 
         public async Task<List<MenuItem>> GetMenuItem()
         {
-            var list = await _context.menuitem_mstr.ToListAsync();
+            var list = await _context.menuitem_mstr.Include(c => c.vendor).ToListAsync();
+            
+       
             if (list == null)
             {
                 throw new Exception("No records found");
@@ -24,9 +26,10 @@ namespace OfficeFoodAPI.Handlers
             return list;
         }
 
+
         public async Task<MenuItem> GetMenuById(Guid menuitemid)
         {
-            var record = await _context.menuitem_mstr.FindAsync(menuitemid);
+            var record = await _context.menuitem_mstr.Where( m=> m.menuitemid == menuitemid).Include(c => c.vendor).FirstOrDefaultAsync();
             if (record == null)
             {
                 throw new Exception("No records found");
@@ -34,7 +37,18 @@ namespace OfficeFoodAPI.Handlers
 
             return record;
         }
+        
 
+        public async Task<MenuItem> GetMenuByVendorId(Guid vendorid, Guid menuitemid)
+        {
+            var record = await _context.menuitem_mstr.Where(m=> m.vendorid == vendorid && m.menuitemid == menuitemid).FirstOrDefaultAsync();
+            if (record == null)
+            {
+                throw new Exception("No records found");
+            }
+
+            return record;
+        }
 
         public async Task<MenuItem> PostMenuItem(MenuItem_post value)
         {
@@ -44,7 +58,7 @@ namespace OfficeFoodAPI.Handlers
                 price = value.price.Value,
                 vendorid = value.vendorid.Value,
                 createdat = DateTime.UtcNow,
-                upatedat = DateTime.UtcNow,
+                updatedat = DateTime.UtcNow,
             };
             await _context.menuitem_mstr.AddAsync(menuitem);
             await _context.SaveChangesAsync();
@@ -61,7 +75,7 @@ namespace OfficeFoodAPI.Handlers
 
         public async Task<MenuItem> PutMenuItem(Guid menuitemid, MenuItem_post value)
         {
-            var data = await _context.menuitem_mstr.Where(c => c.menuitemid == menuitemid).FirstOrDefaultAsync();
+            var data = await _context.menuitem_mstr.Where(c => c.menuitemid == menuitemid && c.vendorid == value.vendorid).FirstOrDefaultAsync();
             if (data == null)
             {
                 throw new Exception("No record to update");
@@ -74,19 +88,17 @@ namespace OfficeFoodAPI.Handlers
             {
                 data.price = value.price.Value  ;
             }
-            if (value.vendorid != null)
-            {
-                data.vendorid = value.vendorid.Value;
-            }
-            data.upatedat = DateTime.UtcNow;
+
+            data.updatedat = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
             return data;
         }
         
-        public async Task<JsonResult> DeleteMenuItem(Guid menuitemid)
+        // vendor can delete the menu item
+        public async Task<JsonResult> DeleteMenuItem(Guid vendorid, Guid menuitemid)
         {
-            var record = await _context.menuitem_mstr.FindAsync(menuitemid);
+            var record = await _context.menuitem_mstr.Where(m => m.vendorid == vendorid && m.menuitemid == menuitemid).FirstOrDefaultAsync();
             _context.menuitem_mstr.Remove(record);
             await _context.SaveChangesAsync();
             

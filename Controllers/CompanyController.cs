@@ -88,6 +88,7 @@ namespace OfficeFoodAPI.Controllers
             }
         }
 
+
         /// <summary>
         /// Get Company Vendor Details
         /// </summary>
@@ -108,9 +109,9 @@ namespace OfficeFoodAPI.Controllers
         }
 
         /*HR related queries*/
-        // subscribe to a particular menu, particular vendor for month for all employees whoever is in the list from current date
         /// <summary>
         /// assign vendor to the company from current date ------> (current date pending) --> need discussion
+        /// subscribe to a particular menu, particular vendor for month for all employees whoever is in the list from current date
         /// </summary>
         /// <param companyname="companyid"></param>
         /// <param companyname="vendorid"></param>
@@ -128,6 +129,46 @@ namespace OfficeFoodAPI.Controllers
                 return BadRequest(ex);
             }
         }
+
+        /// <summary>
+        /// remove assigned vendor to the company
+        /// </summary>
+        /// <param name="companyid"></param>
+        /// <returns></returns>
+        [HttpPatch("RemoveVendor/{companyid}")]
+        public async Task<IActionResult> RemoveVendor(Guid companyid)
+        {
+            try
+            {
+                var data = await _context.RemoveVendor(companyid);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        /// <summary>
+        /// update/change the vendor assigned to this company id with new vendorid
+        /// </summary>
+        /// <param name="companyid"></param>
+        /// <param name="vendorid"></param>
+        /// <returns></returns>
+        [HttpPut("UpdateVendor/{companyid}")]
+        public async Task<IActionResult> UpdateVendor(Guid companyid, Guid NewVendorid)
+        {
+            try
+            {
+                var data = await _context.UpdateVendor(companyid, NewVendorid);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
 
         /// <summary>
         /// add employee to the company

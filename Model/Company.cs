@@ -25,7 +25,7 @@ namespace OfficeFoodAPI.Model
         public string? name { get; set; }
         public string? location { get; set; } 
         public double? subsidyperplate { get; set; } 
-        public Guid? vendorid { get; set; }
+        //public Guid? vendorid { get; set; }
     }
 
     public class Company_return_dto

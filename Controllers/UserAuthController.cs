@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeFoodAPI.Handlers;
 using OfficeFoodAPI.Model;
@@ -19,6 +20,7 @@ namespace OfficeFoodAPI.Controllers
             _authService = authService;
         }
 
+        [AllowAnonymous]
         /// <summary>
         /// TO register an user
         /// </summary>
@@ -46,6 +48,8 @@ namespace OfficeFoodAPI.Controllers
             return Ok("User registered successfully");
         }
 
+
+        [AllowAnonymous]
         /// <summary>
         /// to login
         /// </summary>

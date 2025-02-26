@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using OfficeFoodAPI.Data;
 using OfficeFoodAPI.Model;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 
@@ -19,7 +20,7 @@ namespace OfficeFoodAPI.Handlers
 
         public async Task<List<Company>> GetAll()
         {
-            var list = await _context.company_mstr.ToListAsync();
+            var list = await _context.company_mstr.Include(c => c.vendor).ToListAsync();
             if (list == null)
             {
                 throw new Exception("No records found");
@@ -27,15 +28,16 @@ namespace OfficeFoodAPI.Handlers
             return list;
         }
 
-        public async Task<Company_return_dto> Get(Guid id)
+        public async Task<Company> Get(Guid id)
         {
-            var record = await _context.company_mstr.Where(c => c.companyid == id).FirstOrDefaultAsync();
+            var record = await _context.company_mstr.Where(c => c.companyid == id).Include(c => c.vendor).FirstOrDefaultAsync();
             if (record == null)
             {
                 throw new Exception("No records found");
             }
 
-            return CompanyConversion.MapCompanyToDto(record);
+            //return CompanyConversion.MapCompanyToDto(record);
+            return record;
         }
 
 
@@ -46,7 +48,7 @@ namespace OfficeFoodAPI.Handlers
                 companyname = value.name,
                 location = value.location,
                 subsidyperplate = value.subsidyperplate.Value,
-                vendorid = value.vendorid != null? value.vendorid : null,
+                //vendorid = value.vendorid != null? value.vendorid : null,
                 createdat = DateTime.UtcNow,
                 upatedat = DateTime.UtcNow,
             };
@@ -83,16 +85,34 @@ namespace OfficeFoodAPI.Handlers
             {
                 data.subsidyperplate = value.subsidyperplate.Value;
             }
-            if (value.vendorid != null)
+/*            if (value.vendorid != null)
             {
                 data.vendorid = value.vendorid.Value;
-            }
+            }*/
             data.upatedat = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
             return data;
         }
 
+        
+        public async Task<Company> UpdateVendor(Guid id, Guid vendorid)
+        {
+            var data = await _context.company_mstr.Where(c => c.companyid == id).FirstOrDefaultAsync();
+            if (data == null)
+            {
+                throw new Exception("No record to update");
+            }
+
+            if (vendorid != null)
+            {
+                data.vendorid = vendorid;
+            }
+            data.upatedat = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            return data;
+        }
 
         public async Task<Object> GetCompanyVendorDetails(Guid companyid)
         {
@@ -121,13 +141,30 @@ namespace OfficeFoodAPI.Handlers
             return data;
         }
 
+        public async Task<Object> RemoveVendor(Guid companyid)
+        {
+            var data = await _context.company_mstr.Where(c => c.companyid == companyid).FirstOrDefaultAsync();
+            data.vendorid = null;
+            await _context.SaveChangesAsync();
+
+            return data;
+        }
+
         public async Task<Object> AddEmployeeUser(Guid companyid, string emailid)
         {
+            if (_context.user_mstr.Any(u => u.email == emailid))
+                return false; // Email already exists
+
             // add employee in user_mstr and employee_mstr
-            var usertypeemp = await _context.usertype_mstr.Where(u => u.usertype == "employee").FirstOrDefaultAsync();
+            var usertypeemp = await _context.usertype_mstr.Where(u => u.usertype.ToLower().Trim() == "employee").FirstOrDefaultAsync();
             var company = await _context.company_mstr.Where(c => c.companyid == companyid).FirstOrDefaultAsync();
+
+            string pass = emailid.Split('.')[0] + "123";
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(pass);
+
             User newuser = new User()
             {
+                userid = Guid.NewGuid(),
                 name = emailid.Split('.')[0],
                 email = emailid,
                 companyid = companyid,
@@ -135,19 +172,33 @@ namespace OfficeFoodAPI.Handlers
                 usertypeid = usertypeemp.usertypeid,
                 usertype = usertypeemp,
                 address = company.location,
-                createdat = DateTime.Now,
-                upatedat = DateTime.Now,
+                createdat = DateTime.UtcNow,
+                upatedat = DateTime.UtcNow,
             };
             await _context.AddAsync(newuser);
             await _context.SaveChangesAsync();
 
+            var user = await _context.user_mstr.FindAsync(newuser.userid);
+            var userAuth = new UserAuth
+            {
+                userid = user.userid,
+                passwordHash = hashedPassword
+            };
+            _context.userauth_mstr.Add(userAuth);
+            await _context.SaveChangesAsync();
+
             EmployeeOrderHistory emp = new EmployeeOrderHistory()
             {
-                employeeid = newuser.userid,
+                userid = user.userid,
                 companyid = company.companyid,
                 year = DateTime.Now.Year,
-
+                month = DateTime.Now.Month,
+                createdat = DateTime.UtcNow,
+                upatedat = DateTime.UtcNow,
             };
+
+            await _context.AddAsync(emp);
+            await _context.SaveChangesAsync();
 
             return newuser;
         }

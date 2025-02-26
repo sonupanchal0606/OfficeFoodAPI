@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OfficeFoodAPI.Data;
 using OfficeFoodAPI.Handlers;
 using OfficeFoodAPI.Model;
@@ -18,6 +19,7 @@ namespace OfficeFoodAPI.Controllers
             _context = new UserTypeHandler(context);
         }
 
+        [AllowAnonymous] 
         [HttpGet]
         public async Task<IActionResult> GetUserTypes()
         {

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace OfficeFoodAPI.Model
 {
@@ -8,6 +9,8 @@ namespace OfficeFoodAPI.Model
         public Guid vendorid { get; set; }
         public string name { get; set; }
         public List<string> serviceareas { get; set; } // should we store this data somewhere else
+
+        [JsonIgnore]  // Prevent circular dependency
         public List<MenuItem> menu_item { get; set; }
         public DateTime createdat { get; set; }
         public DateTime upatedat { get; set; }
@@ -17,7 +20,7 @@ namespace OfficeFoodAPI.Model
     {
         public string? name { get; set; }
         public List<string>? serviceareas { get; set; } // should we store this data somewhere else
-        public List<MenuItem>? menu_item { get; set; }
+        //public List<MenuItem>? menu_item { get; set; }
     }
 
     public class MonthlyReport

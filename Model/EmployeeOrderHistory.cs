@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace OfficeFoodAPI.Model
 {
@@ -16,6 +17,8 @@ namespace OfficeFoodAPI.Model
 
         [ForeignKey("Company")]
         public Guid companyid { get; set; }
+
+        [JsonIgnore]
         public Company company { get; set; } // navgational property. one employee associated with one company
 
         public int year { get; set; } //= DateTime.Now.AddMonths(1);
@@ -284,7 +287,7 @@ namespace OfficeFoodAPI.Model
                  day31 = e.day31,
                  day31logs = e.day31logs,
                  createdat = e.createdat,
-                 upatedat = e.upatedat,
+                 updatedat = e.updatedat,
  *//*              totalPlateCountOfEmpgroupedByThali = e.totalPlateCountOfEmpgroupedByThali,
                  totalPriceGroupedByThali = e.totalPriceGroupedByThali,
                  numberOfDaysFoodTaken = e.numberOfDaysFoodTaken,

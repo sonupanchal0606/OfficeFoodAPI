@@ -15,8 +15,8 @@ using OfficeFoodAPI.Model;
 namespace OfficeFoodAPI.Migrations
 {
     [DbContext(typeof(FoodDbContext))]
-    [Migration("20250223034827_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250223042528_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -297,7 +297,7 @@ namespace OfficeFoodAPI.Migrations
                     b.Property<double>("price")
                         .HasColumnType("double precision");
 
-                    b.Property<DateTime>("upatedat")
+                    b.Property<DateTime>("updatedat")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("vendorid")

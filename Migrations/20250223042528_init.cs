@@ -55,7 +55,7 @@ namespace OfficeFoodAPI.Migrations
                     companyname = table.Column<string>(type: "text", nullable: false),
                     location = table.Column<string>(type: "text", nullable: false),
                     subsidyperplate = table.Column<double>(type: "double precision", nullable: false),
-                    vendorid = table.Column<Guid>(type: "uuid", nullable: false),
+                    vendorid = table.Column<Guid>(type: "uuid", nullable: true),
                     createdat = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     upatedat = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -66,8 +66,7 @@ namespace OfficeFoodAPI.Migrations
                         name: "FK_company_mstr_vendor_mstr_vendorid",
                         column: x => x.vendorid,
                         principalTable: "vendor_mstr",
-                        principalColumn: "vendorid",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "vendorid");
                 });
 
             migrationBuilder.CreateTable(
@@ -77,9 +76,9 @@ namespace OfficeFoodAPI.Migrations
                     menuitemid = table.Column<Guid>(type: "uuid", nullable: false),
                     itemname = table.Column<string>(type: "text", nullable: false),
                     price = table.Column<double>(type: "double precision", nullable: false),
+                    vendorid = table.Column<Guid>(type: "uuid", nullable: false),
                     createdat = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    upatedat = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    vendorid = table.Column<Guid>(type: "uuid", nullable: true)
+                    updatedat = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -88,7 +87,8 @@ namespace OfficeFoodAPI.Migrations
                         name: "FK_menuitem_mstr_vendor_mstr_vendorid",
                         column: x => x.vendorid,
                         principalTable: "vendor_mstr",
-                        principalColumn: "vendorid");
+                        principalColumn: "vendorid",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

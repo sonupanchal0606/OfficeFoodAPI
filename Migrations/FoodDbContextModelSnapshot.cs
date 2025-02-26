@@ -294,7 +294,7 @@ namespace OfficeFoodAPI.Migrations
                     b.Property<double>("price")
                         .HasColumnType("double precision");
 
-                    b.Property<DateTime>("upatedat")
+                    b.Property<DateTime>("updatedat")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("vendorid")

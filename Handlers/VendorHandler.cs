@@ -41,7 +41,7 @@ namespace OfficeFoodAPI.Handlers
             {
                 name = value.name,
                 serviceareas = value.serviceareas,
-                menu_item = value.menu_item,
+                //menu_item = value.menu_item,
                 createdat = DateTime.UtcNow,
                 upatedat = DateTime.UtcNow,
             };
@@ -72,10 +72,10 @@ namespace OfficeFoodAPI.Handlers
             {
                 data.serviceareas = value.serviceareas;
             }
-            if (value.menu_item != null) 
+/*          if (value.menu_item != null) 
             {
                 data.menu_item = value.menu_item;
-            }
+            }*/
 
             data.upatedat = DateTime.UtcNow;
 
@@ -97,6 +97,13 @@ namespace OfficeFoodAPI.Handlers
         {
             var record = await _context.company_mstr.Where(u => u.vendorid == id).AsNoTracking().ToListAsync();
             return record; 
+        }
+
+        
+        public async Task<List<MenuItem>> MenuItemsServedByVendor(Guid id)
+        {
+            var record = await _context.menuitem_mstr.Where(u => u.vendorid == id).AsNoTracking().ToListAsync();
+            return record;
         }
 
         public async Task<MonthlyReport> GetMonthlyReport(Guid vendorId, Guid companyId, int month, int year)

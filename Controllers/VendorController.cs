@@ -43,6 +43,11 @@ namespace OfficeFoodAPI.Controllers
         // locations served by vendor
         // menu items of vendor
         // GetVendorCompleteDetails
+        /// <summary>
+        ///  Get Vendor Complete Details by vendor id
+        /// </summary>
+        /// <param name="vendorid"></param>
+        /// <returns></returns>
         [HttpGet("{vendorid}")]
         public async Task<IActionResult> GetVendorById(Guid vendorid)
         {
@@ -62,7 +67,7 @@ namespace OfficeFoodAPI.Controllers
         }
 
         /// <summary>
-        /// Add vendor to the data base with menu item
+        /// Add vendor to the data base without menu item
         /// </summary>
         /// <param companyname="value"></param>
         /// <returns></returns>
@@ -85,7 +90,7 @@ namespace OfficeFoodAPI.Controllers
         // add location to the serving location
         // add menu items (----> add price)
         /// <summary>
-        /// Update location, update menu item
+        /// Update location served by the vendor
         /// </summary>
         /// <param companyname="vendorid"></param>
         /// <param companyname="value"></param>
@@ -103,6 +108,8 @@ namespace OfficeFoodAPI.Controllers
                 return BadRequest(ex);
             }
         }
+
+
 
         /// <summary>
         /// delete vendor from the DB
@@ -143,6 +150,22 @@ namespace OfficeFoodAPI.Controllers
                 return BadRequest(ex);
             }
         }
+
+
+        [HttpGet("MenuItemsServedByVendor/{vendorid}")]
+        public async Task<IActionResult> MenuItemsServedByVendor(Guid vendorid)
+        {
+            try
+            {
+                var data = await _context.MenuItemsServedByVendor(vendorid);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
 
 
         // see monthly report (company wise) --> (companyid, vendorid, month, year)

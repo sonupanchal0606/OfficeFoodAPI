@@ -19,6 +19,11 @@ namespace OfficeFoodAPI.Controllers
             _context = new MenuItemHandler(context);
         }
 
+        
+        /// <summary>
+        /// Get all menu items. Admin can access all the menu options available
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("GetMenuItems")]
         public async Task<IActionResult> GetMenuItems()
         {
@@ -37,12 +42,17 @@ namespace OfficeFoodAPI.Controllers
             }
         }
 
-        [HttpGet("{menuid}")]
-        public async Task<IActionResult> GetMenuById(Guid menuid)
+        /// <summary>
+        /// Admin can get the details of menu item based on menuid
+        /// </summary>
+        /// <param name="menu_itemid"></param>
+        /// <returns></returns>
+        [HttpGet("{menu_itemid}")]
+        public async Task<IActionResult> GetMenuById(Guid menu_itemid)
         {
             try
             {
-                var data = await _context.GetMenuById(menuid);
+                var data = await _context.GetMenuById(menu_itemid);
                 return Ok(data);
 
             }
@@ -56,6 +66,40 @@ namespace OfficeFoodAPI.Controllers
         }
 
 
+
+
+
+        /// <summary>
+        /// vendor can access his/her menu items based on menuid
+        /// Admin/Vendor/Company can get the details of menu item based on menuid
+        /// </summary>
+        /// <param name="vendorid"></param>
+        /// <param name="menu_itemid"></param>
+        /// <returns></returns>
+        [HttpGet("{vendorid}/{menu_itemid}")]
+        public async Task<IActionResult> GetMenuByVendorId(Guid vendorid, Guid menu_itemid)
+        {
+            try
+            {
+                var data = await _context.GetMenuByVendorId(vendorid, menu_itemid);
+                return Ok(data);
+
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("No"))
+                    return NotFound();
+                else
+                    return BadRequest(ex);
+            }
+        }
+
+        
+        /// <summary>
+        /// only vendor can add item to menu list
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> PostMenuItem([FromBody] MenuItem_post value)
         {
@@ -72,6 +116,7 @@ namespace OfficeFoodAPI.Controllers
             }
         }
 
+        // only vendor can update the item
         [HttpPut("{menuitemid}")]
         public async Task<IActionResult> PutMenuItem(Guid menuitemid, [FromBody] MenuItem_post value)
         {
@@ -86,12 +131,13 @@ namespace OfficeFoodAPI.Controllers
             }
         }
 
-        [HttpDelete("{menuitemid}")]
-        public async Task<IActionResult> DeleteMenuItem(Guid menuitemid)
+        // Only vendor can delete the item
+        [HttpDelete("{vendorid}/{menuitemid}")]
+        public async Task<IActionResult> DeleteMenuItem(Guid vendorid, Guid menuitemid)
         {
             try
             {
-                var data = await _context.DeleteMenuItem(menuitemid);
+                var data = await _context.DeleteMenuItem(vendorid, menuitemid);
                 return Ok(data);
             }
             catch (Exception ex)

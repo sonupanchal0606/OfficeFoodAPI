@@ -150,7 +150,7 @@ namespace OfficeFoodAPI.Handlers
                     year = DateTime.UtcNow.Year,
                     month = DateTime.UtcNow.Month,
                     createdat = DateTime.UtcNow,
-                    upatedat = DateTime.UtcNow
+                    updatedat = DateTime.UtcNow
                 };
                 _context.employee_order_history.Add(orderHistory);
             }*/

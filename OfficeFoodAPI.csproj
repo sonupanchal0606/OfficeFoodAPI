@@ -7,6 +7,9 @@
     <UserSecretsId>81942d96-71b6-4b38-abf0-76b7083a4f2d</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>.</DockerfileContext>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<NoWarn>1591</NoWarn>
+	<!-- Suppresses missing XML comment warnings -->  
   </PropertyGroup>
 
   <ItemGroup>

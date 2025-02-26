@@ -7,6 +7,7 @@ using System;
 using OfficeFoodAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OfficeFoodAPI.Handlers
 {
@@ -44,7 +45,7 @@ namespace OfficeFoodAPI.Handlers
         // User Login
         public async Task<AuthResponse> Login(string email, string password)
         {
-            var user = await _context.user_mstr.FirstOrDefaultAsync(u => u.email == email);
+            var user = await _context.user_mstr.Include(u => u.usertype).FirstOrDefaultAsync(u => u.email == email);
             if (user == null)
                 return null; // user not registered
 
@@ -80,15 +81,15 @@ namespace OfficeFoodAPI.Handlers
             {
             new Claim(ClaimTypes.NameIdentifier, user.userid.ToString()),
             new Claim(ClaimTypes.Email, user.email),
-            new Claim("UserType", user.usertype?.ToString() ?? "User")
+            new Claim("UserType", user.usertype?.usertype.ToString() ?? "Employee")
             };
 
             var token = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 claims,
-                //expires: DateTime.UtcNow.AddHours(2),
-                expires: DateTime.UtcNow.AddMinutes(15), // Access token valid for 15 min
+                //expires: DateTime.UtcNow.AddMinutes(15), // Access token valid for 15 min
+                expires: DateTime.UtcNow.AddDays(7),
                 signingCredentials: creds
             );
 
