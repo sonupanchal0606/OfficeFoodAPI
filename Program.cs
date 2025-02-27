@@ -19,21 +19,20 @@ var jwtSettings = builder.Configuration.GetSection("Jwt");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.RequireHttpsMetadata = false;  // If testing on HTTP
-        options.SaveToken = true;
+        options.RequireHttpsMetadata = false;  // If testing on HTTP, Disable HTTPS for testing purposes
+        options.SaveToken = true; // Saves token in the authentication context
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-
+            ValidateIssuer = true,  // Ensures token comes from a valid Issuer
+            ValidateAudience = true,  // Ensures token is intended for the right audience
+            ValidateLifetime = true,  // Ensures token is not expired
+            ValidateIssuerSigningKey = true,  // Ensures token is signed with a valid key
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],  // Reads Issuer from appsettings.json
+            ValidAudience = builder.Configuration["Jwt:Audience"],  // Reads Audience from appsettings.json
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Uses the secret key to verify the token's signature
         };
+
         options.Events = new JwtBearerEvents
         {
             OnAuthenticationFailed = context =>
@@ -48,12 +47,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // Enforce Role-Based Authorization
-/*builder.Services.AddAuthorization(options =>
+builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("VendorOnly", policy => policy.RequireRole("Vendor"));
     options.AddPolicy("CompanyOnly", policy => policy.RequireRole("Company"));
     options.AddPolicy("EmployeeOnly", policy => policy.RequireRole("Employee"));
-});*/
+});
 
 // Add Controllers with Global Authorization
 builder.Services.AddControllers(options =>

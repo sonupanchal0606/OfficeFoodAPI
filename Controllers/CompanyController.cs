@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OfficeFoodAPI.Data;
 using OfficeFoodAPI.Handlers;
 using OfficeFoodAPI.HelperClasses;
@@ -39,6 +40,7 @@ namespace OfficeFoodAPI.Controllers
 
         }
 
+        //[Authorize(Policy = "CompanyOnly")]
         [HttpGet("GetCompanyById/{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {

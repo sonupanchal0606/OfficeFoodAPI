@@ -81,7 +81,8 @@ namespace OfficeFoodAPI.Handlers
             {
             new Claim(ClaimTypes.NameIdentifier, user.userid.ToString()),
             new Claim(ClaimTypes.Email, user.email),
-            new Claim("UserType", user.usertype?.usertype.ToString() ?? "Employee")
+            //new Claim("UserType", user.usertype?.usertype.ToString() ?? "Employee")
+            new Claim(ClaimTypes.Role, user.usertype?.usertype.ToString() ?? "Employee") // Ensure role claim is included
             };
 
             var token = new JwtSecurityToken(
